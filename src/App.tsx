@@ -1,31 +1,12 @@
 import { useState } from "react";
 
+import { EntityCard } from "./EntityCard";
+import { TMusicBrainzEntity } from "./types";
+import { ADDITIONAL_PARAMS, MB_API_ROOT, ENTITY_LOOKUP_PATH } from "./constants";
+
 import "./App.css";
 
-const MB_API_ROOT = "https://musicbrainz.org/ws/2/";
-const ENTITY_LOOKUP_PATH = (entity_type: string) => `${entity_type}/`;
-const ADDITIONAL_PARAMS = {
-  fmt: "json",
-  inc: "url-rels+recording-rels+artist-credits",
-};
-
 type TAppState = "idle" | "loading" | "success" | "error";
-
-type TMusicBrainzEntity = {
-  id: string;
-  title: string;
-  "artist-credit": {
-    artist: {
-      id: string;
-      name: string;
-    };
-  }[];
-  relations: {
-    type: string;
-    direction: string;
-    recording: Omit<TMusicBrainzEntity, "relations">;
-  }[];
-};
 
 const additionalParamsString = Object.entries(ADDITIONAL_PARAMS)
   .map(([key, value]) => `${key}=${value}`)
@@ -45,7 +26,7 @@ function App() {
     fetchEntity(entityId);
   };
 
-  console.log({data})
+  console.log({ data });
 
   const fetchEntity = async (entityId: string) => {
     try {
@@ -94,47 +75,28 @@ function App() {
           <div className="ForwardLinks">
             {forwardLinks.map((link) => (
               <button
+                key={link.id}
                 onClick={() => {
                   setEntityId(link.id);
                   fetchEntity(link.id);
                 }}
               >
-                <div className="Card Link" key={link.id}>
-                  <div className="Title">{link.title}</div>
-                  <div className="Artists">
-                    {link["artist-credit"].map((credit) => (
-                      <div key={credit.artist.id}>{credit.artist.name}</div>
-                    ))}
-                  </div>
-                </div>
+                <EntityCard data={link} />
               </button>
             ))}
           </div>
 
-          <div className="Card">
-            <div className="Title">{data.title}</div>
-            <div className="Artists">
-              {data["artist-credit"].map((artist) => (
-                <div key={artist.artist.id}>{artist.artist.name}</div>
-              ))}
-            </div>
-          </div>
+          <EntityCard data={data} />
           <div className="BackwardLinks">
             {backwardLinks.map((link) => (
               <button
+                key={link.id}
                 onClick={() => {
                   setEntityId(link.id);
                   fetchEntity(link.id);
                 }}
               >
-                <div className="Card Link" key={link.id}>
-                  <div className="Title">{link.title}</div>
-                  <div className="Artists">
-                    {link["artist-credit"].map((credit) => (
-                      <div key={credit.artist.id}>{credit.artist.name}</div>
-                    ))}
-                  </div>
-                </div>
+                <EntityCard data={link} />
               </button>
             ))}
           </div>
