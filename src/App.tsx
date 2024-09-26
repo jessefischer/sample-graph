@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 
 import "./App.css";
@@ -19,12 +18,12 @@ type TMusicBrainzEntity = {
     artist: {
       id: string;
       name: string;
-    }[];
+    };
   }[];
   relations: {
     type: string;
     direction: string;
-    recording: any;
+    recording: Omit<TMusicBrainzEntity, "relations">;
   }[];
 };
 
@@ -45,6 +44,8 @@ function App() {
     setState("loading");
     fetchEntity(entityId);
   };
+
+  console.log({data})
 
   const fetchEntity = async (entityId: string) => {
     try {
@@ -91,7 +92,7 @@ function App() {
       {state === "success" && !!data && (
         <>
           <div className="ForwardLinks">
-            {forwardLinks.map((link: any) => (
+            {forwardLinks.map((link) => (
               <button
                 onClick={() => {
                   setEntityId(link.id);
@@ -101,8 +102,8 @@ function App() {
                 <div className="Card Link" key={link.id}>
                   <div className="Title">{link.title}</div>
                   <div className="Artists">
-                    {link["artist-credit"].map((artist: any) => (
-                      <div key={artist.artist.id}>{artist.artist.name}</div>
+                    {link["artist-credit"].map((credit) => (
+                      <div key={credit.artist.id}>{credit.artist.name}</div>
                     ))}
                   </div>
                 </div>
@@ -113,13 +114,13 @@ function App() {
           <div className="Card">
             <div className="Title">{data.title}</div>
             <div className="Artists">
-              {data["artist-credit"].map((artist: any) => (
+              {data["artist-credit"].map((artist) => (
                 <div key={artist.artist.id}>{artist.artist.name}</div>
               ))}
             </div>
           </div>
           <div className="BackwardLinks">
-            {backwardLinks.map((link: any) => (
+            {backwardLinks.map((link) => (
               <button
                 onClick={() => {
                   setEntityId(link.id);
@@ -129,8 +130,8 @@ function App() {
                 <div className="Card Link" key={link.id}>
                   <div className="Title">{link.title}</div>
                   <div className="Artists">
-                    {link["artist-credit"].map((artist: any) => (
-                      <div key={artist.artist.id}>{artist.artist.name}</div>
+                    {link["artist-credit"].map((credit) => (
+                      <div key={credit.artist.id}>{credit.artist.name}</div>
                     ))}
                   </div>
                 </div>
