@@ -2,5 +2,5 @@ export const MB_API_ROOT = "https://musicbrainz.org/ws/2/";
 export const ENTITY_LOOKUP_PATH = (entity_type: string) => `${entity_type}/`;
 export const ADDITIONAL_PARAMS = {
   fmt: "json",
-  inc: "url-rels+recording-rels+artist-credits",
+  inc: "url-rels+recording-rels+artist-credits+release-rels+release-group-rels+releases+artists+release-groups+isrcs+url-rels",
 };
