@@ -1,0 +1,1 @@
+export const USER_AGENT = "sample-graph/0.0.1";
