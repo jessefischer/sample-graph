@@ -3,7 +3,6 @@ import { TEnrichedMusicBrainzEntity } from "~/types";
 import { fetchOpenGraph } from "./fetchOpenGraph";
 import { fetchCoverArt } from "./fetchCoverArt";
 import { fetchSpotify } from "./fetchSpotify";
-import { image } from "framer-motion/client";
 
 const MB_API_ROOT = "https://musicbrainz.org/ws/2/";
 const ENTITY_LOOKUP_PATH = (entity_type: string) => `${entity_type}/`;
@@ -62,7 +61,10 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
   }
 
   if (!data.imageUrl || !data.audioUrl) {
-    const spotifyData = await fetchSpotify({ title: data.title });
+    const spotifyData = await fetchSpotify({
+      title: data.title,
+      artist: data["artist-credit"][0].artist.name,
+    });
     if (spotifyData?.tracks?.items.length > 0) {
       data.imageUrl = spotifyData.tracks.items[0]?.album?.images?.[0]?.url;
       data.audioUrl = spotifyData.tracks.items[0]?.preview_url;
@@ -75,8 +77,6 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
       data.audioUrl = audioUrl;
     }
   }
-
-
 
   if (!data.imageUrl && data.releases && data.releases.length > 0) {
     const firstUSRelease = data.releases.find(

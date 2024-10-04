@@ -1,6 +1,10 @@
-import { json } from "@remix-run/node";
-
-export const fetchSpotify = async ({ title }:{title: string}) => {
+export const fetchSpotify = async ({
+  title,
+  artist,
+}: {
+  title: string;
+  artist: string;
+}) => {
   // Request access token from Spotify
   const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -25,7 +29,7 @@ export const fetchSpotify = async ({ title }:{title: string}) => {
   // Make an authenticated request to the Spotify API
   const spotifyResponse = await fetch(
     "https://api.spotify.com/v1/search?q=" +
-      encodeURIComponent(title) +
+      encodeURIComponent(`title:${title}%20artist:${artist}`) +
       "&type=track&limit=1&market=US",
     {
       headers: {
@@ -33,7 +37,7 @@ export const fetchSpotify = async ({ title }:{title: string}) => {
       },
     }
   );
-
+  
   if (!spotifyResponse.ok) {
     throw new Response("Failed to fetch data from Spotify", { status: 500 });
   }
