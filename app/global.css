@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
 body,
-html {
+html, input, button {
   font-family: 'Roboto Mono', monospace;
   font-size: 12px;
   margin: 0;
@@ -28,11 +28,12 @@ html {
 .input,
 .button {
   padding: 1em;
-  font-size: 1em;
+  font-size: 1.4em;
   border-radius: 6px;
 }
 
 .input {
+  border: none;
   width: 36em;
 }
 
