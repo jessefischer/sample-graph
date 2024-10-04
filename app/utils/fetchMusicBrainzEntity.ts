@@ -2,6 +2,7 @@ import { USER_AGENT } from "~/constants";
 import { TEnrichedMusicBrainzEntity } from "~/types";
 import { fetchOpenGraph } from "./fetchOpenGraph";
 import { fetchCoverArt } from "./fetchCoverArt";
+import { fetchSpotify } from "./fetchSpotify";
 
 const MB_API_ROOT = "https://musicbrainz.org/ws/2/";
 const ENTITY_LOOKUP_PATH = (entity_type: string) => `${entity_type}/`;
@@ -41,6 +42,13 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
         );
         data.imageUrl = imageUrl;
         data.audioUrl = audioUrl;
+      } else {
+        // const spotifyData = await fetchSpotify({ title: relation.recording.title });
+        // if (spotifyData?.tracks?.items.length > 0) {
+        //   relation.imageUrl = spotifyData.tracks.items[0]?.album?.images?.[0]?.url;
+        //   relation.audioUrl = spotifyData.tracks.items[0]?.preview_url;
+        //   console.log({imageUrl: relation.imageUrl, audioUrl: relation.audioUrl});
+        // }
       }
       if (relation.type === "samples material") {
         if (relation.direction === "backward") {
@@ -49,6 +57,24 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
           data.forwardLinks.push(relation.recording);
         }
       }
+    }
+  }
+
+  if (!data.imageUrl || !data.audioUrl) {
+    const spotifyData = await fetchSpotify({
+      title: data.title,
+      artist: data["artist-credit"][0].artist.name,
+    });
+    if (spotifyData?.tracks?.items.length > 0) {
+      data.imageUrl = spotifyData.tracks.items[0]?.album?.images?.[0]?.url;
+      data.audioUrl = spotifyData.tracks.items[0]?.preview_url;
+    }
+
+    if (!data.audioUrl) {
+      const { audioUrl } = await fetchOpenGraph(
+        spotifyData.tracks.items[0]?.external_urls?.spotify
+      );
+      data.audioUrl = audioUrl;
     }
   }
 
