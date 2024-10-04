@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, MetaFunction, useLoaderData } from "@remix-run/react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Howl } from "howler";
@@ -18,13 +18,27 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 }
 
+export const meta: MetaFunction<typeof loader> = ({data}) => {
+  console.log("Meta data", data);
+  const title = `${data?.data.title} - ${data?.data["artist-credit"][0].artist.name} | Sample Graph Explorer`;
+  return [
+    { title },
+    {
+      property: "og:title",
+      content: title,
+    },
+    {
+      name: "description",
+      content: "Sample Graph Explorer",
+    },
+  ];
+};
+
 export default function Recording() {
   const { data } = useLoaderData<typeof loader>();
   const soundRef = useRef<Howl | null>(null);
   const [initialized, setInitialized] = useState(false);
   const [playing, setPlaying] = useState(false);
-
-  console.log({ data, soundRef });
 
   useEffect(() => {
     if (data.audioUrl && initialized) {
