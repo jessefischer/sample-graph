@@ -17,7 +17,7 @@ html {
   align-items: center;
   perspective-origin: center;
   perspective: 1600px;
-  background-color: rgb(76, 76, 76);
+  background-image: linear-gradient(0deg, rgb(115, 140, 140), rgb(25, 20, 42));
 }
 
 .form {
