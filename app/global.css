@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+body,
+html {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  margin: 0;
+}
+
+.app {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  perspective-origin: center;
+  perspective: 1600px;
+  background-color: rgb(76, 76, 76);
+}
+
+.form {
+  display: flex;
+  gap: 12px;
+}
+
+.input,
+.button {
+  padding: 1em;
+  font-size: 1em;
+  border-radius: 6px;
+}
+
+.input {
+  width: 36em;
+}
+
+.button {
+  background-color: #007bff;
+  text-decoration: none;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.forwardLinks,
+.backwardLinks {
+  display: flex;
+  gap: 12px;
+  height: 200px;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.forwardLinks {
+  transform: rotateX(10deg);
+  align-items: end;
+}
+
+.backwardLinks {
+  transform: rotateX(-10deg);
+  align-items: start;
+}
