@@ -1,6 +1,6 @@
 // import { useState } from "react";
 import { TEnrichedMusicBrainzEntity } from "../types";
-
+import { BsFillPauseFill, BsFillPlayFill } from "react-icons/bs";
 import cx from "classnames";
 
 import styles from "./RecordingCard.module.css";
@@ -8,43 +8,16 @@ import styles from "./RecordingCard.module.css";
 interface IRecordingCardProps {
   data: TEnrichedMusicBrainzEntity;
   size?: "large" | "small";
+  playing?: boolean;
+  setPlaying?: (playing: boolean) => void;
 }
 
 export const RecordingCard = ({
   data,
   size = "large",
+  playing,
+  setPlaying,
 }: IRecordingCardProps) => {
-  // const [coverArtSrc, setCoverArtSrc] = useState<string | null>(null);
-
-  // console.log( 'EntityCard data', data );
-
-  // useEffect(() => {
-  //   if (data?.releases?.length > 0) {
-  //     const firstUSRelease = data.releases.find(
-  //       (release) => release.country === "US"
-  //     );
-  //     if (!firstUSRelease) {
-  //       return;
-  //     }
-  //     fetch(`https://coverartarchive.org/release/${firstUSRelease.id}`)
-  //       .then((response) => {
-  //         if (response.ok) {
-  //           return response.json();
-  //         }
-  //         throw new Error("Failed to fetch cover art");
-  //       })
-  //       .then((data) => {
-  //         console.log( 'coverArtArchive data', data );
-  //         if (data.images.length > 0) {
-  //           setCoverArtSrc(data.images[0].thumbnails.large);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   }
-  // });
-
   return (
     <div className={cx(styles.card, { [styles.small]: size === "small" })}>
       {data.imageUrl && (
@@ -53,6 +26,21 @@ export const RecordingCard = ({
           src={data.imageUrl}
           alt="Cover art"
         />
+      )}
+      {data.audioUrl && setPlaying && (
+        <div className={styles.controls}>
+          <button
+            onClick={() => {
+              if (playing) {
+                setPlaying(false);
+              } else {
+                setPlaying(true);
+              }
+            }}
+          >
+            {playing ? <BsFillPauseFill size={96}/> : <BsFillPlayFill size={96}/>}
+          </button>
+        </div>
       )}
       <div className={styles.mainMetaData}>
         <div className={styles.title}>{data.title}</div>
