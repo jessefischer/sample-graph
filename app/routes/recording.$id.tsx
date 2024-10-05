@@ -18,7 +18,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 }
 
-export const meta: MetaFunction<typeof loader> = ({data}) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const title = `${data?.data.title} - ${data?.data["artist-credit"][0].artist.name} | Sample Graph Explorer`;
   return [
     { title },
@@ -38,6 +38,46 @@ export default function Recording() {
   const soundRef = useRef<Howl | null>(null);
   const [initialized, setInitialized] = useState(false);
   const [playing, setPlaying] = useState(false);
+
+  const mainCardRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [cardRects, setCardRects] = useState<DOMRect[]>([]);
+
+  const registerCardRect = (rect: DOMRect) => {
+    const newCardRects = [...cardRects];
+    cardRects.push(rect);
+    setCardRects(newCardRects);
+  };
+
+  // useEffect(() => {
+  //   const ctx = canvasRef?.current?.getContext("2d");
+  //   if (ctx) {
+  //     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  //   }
+  //   for (let i = 0; i < cardRects.length; i++) {
+  //     const center = {
+  //       x: cardRects[i].x + cardRects[i].width / 2,
+  //       y: cardRects[i].y + cardRects[i].height / 2,
+  //     };
+  //     if (canvasRef.current) {
+
+  //       if (ctx && mainCardRef.current) {
+  //         const mainCardRect = mainCardRef.current.getBoundingClientRect();
+  //         const mainCardCenter = {
+  //           x: mainCardRect.x + mainCardRect.width / 2,
+  //           y: mainCardRect.y + mainCardRect.height / 2,
+  //         };
+
+  //         ctx.beginPath();
+  //         ctx.moveTo(center.x, center.y);
+  //         ctx.strokeStyle = "black";
+  //         ctx.lineWidth = 2;
+  //         ctx.lineTo(mainCardCenter.x, mainCardCenter.y);
+  //         ctx.stroke();
+  //       }
+  //     }
+  //   }
+  // }, [cardRects]);
 
   useEffect(() => {
     if (data.audioUrl && initialized) {
@@ -59,6 +99,7 @@ export default function Recording() {
 
   return (
     <motion.div className="app">
+      <canvas ref={canvasRef} className="canvas" width="1000px" height="1000px"/>
       <LayoutGroup>
         <div className="forwardLinks">
           <AnimatePresence>
@@ -72,13 +113,22 @@ export default function Recording() {
                 key={link.id}
               >
                 <Link to={`/recording/${link.id}`}>
-                  <RecordingCard data={link} size="small" />
+                  <RecordingCard
+                    data={link}
+                    size="small"
+                    registerCardRect={registerCardRect}
+                  />
                 </Link>
               </motion.div>
             ))}
           </AnimatePresence>
         </div>
-        <motion.div layoutId={data.id} key={data.id} layout="position">
+        <motion.div
+          ref={mainCardRef}
+          layoutId={data.id}
+          key={data.id}
+          layout="position"
+        >
           <RecordingCard
             data={data}
             playing={playing}
@@ -109,7 +159,11 @@ export default function Recording() {
                 key={link.id}
               >
                 <Link to={`/recording/${link.id}`}>
-                  <RecordingCard data={link} size="small" />
+                  <RecordingCard
+                    data={link}
+                    size="small"
+                    registerCardRect={registerCardRect}
+                  />
                 </Link>
               </motion.div>
             ))}

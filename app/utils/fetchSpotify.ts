@@ -26,6 +26,8 @@ export const fetchSpotify = async ({
   const tokenData = await tokenResponse.json();
   const accessToken = tokenData.access_token;
 
+  console.log({accessToken});
+
   // Make an authenticated request to the Spotify API
   const spotifyResponse = await fetch(
     "https://api.spotify.com/v1/search?q=" +
