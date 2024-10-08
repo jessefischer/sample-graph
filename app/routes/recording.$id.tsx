@@ -46,6 +46,16 @@ export default function Recording() {
     height: number;
   }>();
   const [stars, setStars] = useState<TStar[]>();
+  const [cachedImageUrls, setCachedImageUrls] = useState({});
+
+  useEffect(() => {
+    if (data.imageUrl) {
+      setCachedImageUrls((cachedImageUrls) => ({
+        ...cachedImageUrls,
+        [data.id]: data.imageUrl,
+      }));
+    }
+  }, [data.imageUrl, data.id]);
 
   useEffect(
     () =>
@@ -102,6 +112,7 @@ export default function Recording() {
   return (
     <AppContext.Provider
       value={{
+        cachedImageUrls,
         playing,
         setPlaying: (playing) => {
           if (!initialized) {

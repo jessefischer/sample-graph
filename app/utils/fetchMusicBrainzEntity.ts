@@ -127,7 +127,5 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
   //   forwardLinks[i].coverArtUrl = coverArtData.images?.[0]?.image;
   // }
 
-  console.log({ data });
-
   return { data };
 };
