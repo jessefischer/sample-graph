@@ -63,7 +63,8 @@ export default function Recording() {
   );
 
   useEffect(() => {
-    if (data.audioUrl && initialized) {
+    if (data.audioUrl && playing) {
+      soundRef.current?.unload();
       soundRef.current = new Howl({
         src: [data.audioUrl],
         preload: true,
@@ -72,13 +73,20 @@ export default function Recording() {
       });
       soundRef.current.play();
       setPlaying(true);
+    } else if (data.audioUrl && initialized) {
+      soundRef.current = new Howl({
+        src: [data.audioUrl],
+        preload: true,
+        loop: true,
+        html5: true,
+      });
     }
     return () => {
       setPlaying(false);
       soundRef.current?.stop();
       soundRef.current?.unload();
     };
-  }, [data.audioUrl, initialized]);
+  }, [data.audioUrl, initialized, playing]);
 
   useEffect(() => {
     const updateWindowSize = () =>
@@ -98,6 +106,8 @@ export default function Recording() {
         setPlaying: (playing) => {
           if (!initialized) {
             setInitialized(true);
+            soundRef.current?.play();
+            setPlaying(true);
           } else {
             if (playing) {
               soundRef.current?.play();
