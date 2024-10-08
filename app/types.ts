@@ -34,3 +34,10 @@ export type TEnrichedMusicBrainzEntity = TMusicBrainzEntity & {
   backwardLinks?: TMusicBrainzEntity[];
   forwardLinks?: TMusicBrainzEntity[];
 };
+
+export type TStar = {
+  x: number;
+  y: number;
+  r: number;
+  a: number;
+};
