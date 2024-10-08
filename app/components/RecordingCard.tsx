@@ -40,7 +40,7 @@ export const RecordingCard = ({
           alt="Cover art"
         />
       )}
-      {data.audioUrl && setPlaying && (
+      {data.audioUrl && setPlaying && size === "large" && (
         <div className={styles.controls}>
           <button
             onClick={() => {

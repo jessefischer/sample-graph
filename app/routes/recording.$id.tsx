@@ -6,15 +6,45 @@ import { Howl } from "howler";
 
 import { RecordingCard } from "~/components/RecordingCard";
 import { fetchMusicBrainzEntity } from "~/utils/fetchMusicBrainzEntity";
-import { TStar } from "~/types";
+import { TEnrichedMusicBrainzEntity, TStar } from "~/types";
 import { STAR_BLUR_RADIUS, STAR_COUNT, STAR_MAX_RADIUS } from "~/constants";
 import { AppContext } from "~/contexts/AppContext";
+import { fetchSpotify } from "~/utils/fetchSpotify";
+import { fetchOpenGraph } from "~/utils/fetchOpenGraph";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const entityId = params.id;
   if (!entityId) return;
   try {
     const { data } = await fetchMusicBrainzEntity(entityId);
+
+    const fetchSpotifyPromises = async (link: TEnrichedMusicBrainzEntity) => {
+      if (!link.imageUrl) {
+        const spotifyData = await fetchSpotify({
+          title: link.title,
+          artist: link["artist-credit"]?.[0].artist.name,
+        });
+        if (spotifyData?.tracks?.items.length > 0) {
+          link.imageUrl = spotifyData.tracks.items[0]?.album?.images?.[0]?.url;
+          link.audioUrl = spotifyData.tracks.items[0]?.preview_url;
+          if (!link.audioUrl) {
+            try {
+              const { audioUrl } = await fetchOpenGraph(
+                spotifyData.tracks.items[0]?.external_urls?.spotify
+              );
+              link.audioUrl = audioUrl;
+            } catch {
+              // TODO: Add fallback
+            }
+          }
+        }
+      }
+    };
+
+    await Promise.all([
+      ...(data.backwardLinks ?? []).map(fetchSpotifyPromises),
+      ...(data.forwardLinks ?? []).map(fetchSpotifyPromises),
+    ]);
     return json({ data });
   } catch (error) {
     throw new Response("Not Found", { status: 404 });

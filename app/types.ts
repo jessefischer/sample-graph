@@ -31,8 +31,8 @@ export type TEnrichedMusicBrainzEntity = TMusicBrainzEntity & {
   imageUrl?: string;
   audioUrl?: string;
   year?: string;
-  backwardLinks?: TMusicBrainzEntity[];
-  forwardLinks?: TMusicBrainzEntity[];
+  backwardLinks?: TEnrichedMusicBrainzEntity[];
+  forwardLinks?: TEnrichedMusicBrainzEntity[];
 };
 
 export type TStar = {
