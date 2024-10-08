@@ -6,11 +6,11 @@ import { Howl } from "howler";
 
 import { RecordingCard } from "~/components/RecordingCard";
 import { fetchMusicBrainzEntity } from "~/utils/fetchMusicBrainzEntity";
-import { TEnrichedMusicBrainzEntity, TStar } from "~/types";
-import { STAR_BLUR_RADIUS, STAR_COUNT, STAR_MAX_RADIUS } from "~/constants";
+import { TEnrichedMusicBrainzEntity } from "~/types";
 import { AppContext } from "~/contexts/AppContext";
 import { fetchSpotify } from "~/utils/fetchSpotify";
 import { fetchOpenGraph } from "~/utils/fetchOpenGraph";
+import { BackgroundStars } from "~/components/BackgroundStars";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const entityId = params.id;
@@ -47,12 +47,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
     ]);
     return json({ data });
   } catch (error) {
-    throw new Response("Not Found", { status: 404 });
+    console.error(error);
+    throw new Response("Error", { status: 500 });
   }
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const title = `${data?.data.title} - ${data?.data["artist-credit"][0].artist.name} | Sample Graph Explorer`;
+  const title = `${data?.data.title} - ${data?.data["artist-credit"]?.[0].artist.name} | Sample Graph Explorer`;
   return [
     { title },
     {
@@ -71,11 +72,7 @@ export default function Recording() {
   const soundRef = useRef<Howl | null>(null);
   const [initialized, setInitialized] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [windowSize, setWindowSize] = useState<{
-    width: number;
-    height: number;
-  }>();
-  const [stars, setStars] = useState<TStar[]>();
+
   const [cachedImageUrls, setCachedImageUrls] = useState({});
 
   useEffect(() => {
@@ -86,21 +83,6 @@ export default function Recording() {
       }));
     }
   }, [data.imageUrl, data.id]);
-
-  useEffect(
-    () =>
-      setStars(
-        Array(STAR_COUNT)
-          .fill(null)
-          .map(() => ({
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            r: Math.random() * STAR_MAX_RADIUS,
-            a: Math.random(),
-          }))
-      ),
-    []
-  );
 
   useEffect(() => {
     if (data.audioUrl && playing) {
@@ -128,17 +110,6 @@ export default function Recording() {
     };
   }, [data.audioUrl, initialized, playing]);
 
-  useEffect(() => {
-    const updateWindowSize = () =>
-      setWindowSize({
-        height: window.innerHeight,
-        width: window.innerWidth,
-      });
-    updateWindowSize();
-    window.addEventListener("resize", updateWindowSize);
-    return () => window.removeEventListener("resize", updateWindowSize);
-  }, []);
-
   return (
     <AppContext.Provider
       value={{
@@ -162,31 +133,7 @@ export default function Recording() {
       }}
     >
       <motion.div className="app">
-        {windowSize && (
-          <svg
-            className="fullWidthSvg"
-            width={windowSize.width}
-            height={windowSize.height}
-            viewBox={`0 0 ${windowSize.width} ${windowSize.height}`}
-          >
-            <filter id="blur">
-              <feGaussianBlur
-                in="SourceGraphic"
-                stdDeviation={STAR_BLUR_RADIUS}
-              />
-            </filter>
-            {stars?.map((star, i) => (
-              <circle
-                key={i}
-                fill={`rgb(255,255,255,${star.a}`}
-                cx={star.x}
-                cy={star.y}
-                r={star.r}
-                filter="url(#blur)"
-              />
-            ))}
-          </svg>
-        )}
+        <BackgroundStars />
         <LayoutGroup>
           <div className="forwardLinks">
             <AnimatePresence>

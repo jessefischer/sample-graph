@@ -2,6 +2,7 @@ import type { MetaFunction } from "@remix-run/node";
 
 import { useState } from "react";
 import { Link } from "@remix-run/react";
+import { BackgroundStars } from "~/components/BackgroundStars";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,18 +12,27 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const [id, setId] = useState("");
+  const [title, setTitle] = useState("");
+  const [artist, setArtist] = useState("");
   return (
     <div className="app">
+      <BackgroundStars />
       <div className="form">
         <input
           className="input"
           type="text"
-          placeholder="Enter a MusicBrainz Recording ID"
-          value={id}
-          onChange={(e) => setId(e.target.value)}
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
-        <Link to={`/recording/${id}`} className="button">
+        <input
+          className="input"
+          type="text"
+          placeholder="Artist"
+          value={artist}
+          onChange={(e) => setArtist(e.target.value)}
+        />
+        <Link to={`/search/${title}/${artist}`} className="button">
           Search
         </Link>
       </div>

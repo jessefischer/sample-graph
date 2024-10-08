@@ -67,7 +67,7 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
   if (!data.imageUrl || !data.audioUrl) {
     const spotifyData = await fetchSpotify({
       title: data.title,
-      artist: data["artist-credit"][0].artist.name,
+      artist: data["artist-credit"]?.[0].artist.name,
     });
 
     if (spotifyData?.tracks?.items.length > 0) {
