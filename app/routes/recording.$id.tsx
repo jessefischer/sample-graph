@@ -8,6 +8,7 @@ import { RecordingCard } from "~/components/RecordingCard";
 import { fetchMusicBrainzEntity } from "~/utils/fetchMusicBrainzEntity";
 import { TStar } from "~/types";
 import { STAR_BLUR_RADIUS, STAR_COUNT, STAR_MAX_RADIUS } from "~/constants";
+import { AppContext } from "~/contexts/AppContext";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const entityId = params.id;
@@ -91,89 +92,92 @@ export default function Recording() {
   }, []);
 
   return (
-    <motion.div className="app">
-      {windowSize && (
-        <svg
-          style={{ position: "absolute", top: 0, left: 0 }}
-          width={windowSize.width}
-          height={windowSize.height}
-          viewBox={`0 0 ${windowSize.width} ${windowSize.height}`}
-        >
-          <filter id="blur">
-            <feGaussianBlur
-              in="SourceGraphic"
-              stdDeviation={STAR_BLUR_RADIUS}
-            />
-          </filter>
-          {stars?.map((star, i) => (
-            <circle
-              key={i}
-              fill={`rgb(255,255,255,${star.a}`}
-              cx={star.x}
-              cy={star.y}
-              r={star.r}
-              filter="url(#blur)"
-            />
-          ))}
-        </svg>
-      )}
-      <LayoutGroup>
-        <div className="forwardLinks">
-          <AnimatePresence>
-            {data.forwardLinks?.map((link) => (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                layoutId={link.id}
-                layout="position"
-                key={link.id}
-              >
-                <Link to={`/recording/${link.id}`}>
-                  <RecordingCard data={link} size="small" />
-                </Link>
-              </motion.div>
+    <AppContext.Provider
+      value={{
+        playing,
+        setPlaying: (playing) => {
+          if (!initialized) {
+            setInitialized(true);
+          } else {
+            if (playing) {
+              soundRef.current?.play();
+              setPlaying(true);
+            } else {
+              soundRef.current?.pause();
+              setPlaying(false);
+            }
+          }
+        },
+      }}
+    >
+      <motion.div className="app">
+        {windowSize && (
+          <svg
+            className="fullWidthSvg"
+            width={windowSize.width}
+            height={windowSize.height}
+            viewBox={`0 0 ${windowSize.width} ${windowSize.height}`}
+          >
+            <filter id="blur">
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation={STAR_BLUR_RADIUS}
+              />
+            </filter>
+            {stars?.map((star, i) => (
+              <circle
+                key={i}
+                fill={`rgb(255,255,255,${star.a}`}
+                cx={star.x}
+                cy={star.y}
+                r={star.r}
+                filter="url(#blur)"
+              />
             ))}
-          </AnimatePresence>
-        </div>
-        <motion.div layoutId={data.id} key={data.id} layout="position">
-          <RecordingCard
-            data={data}
-            playing={playing}
-            setPlaying={(playing) => {
-              if (!initialized) {
-                setInitialized(true);
-              } else {
-                if (playing) {
-                  soundRef.current?.play();
-                  setPlaying(true);
-                } else {
-                  soundRef.current?.pause();
-                  setPlaying(false);
-                }
-              }
-            }}
-          />
-        </motion.div>
-        <div className="backwardLinks">
-          <AnimatePresence>
-            {data.backwardLinks?.map((link) => (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                layoutId={link.id}
-                layout="position"
-                key={link.id}
-              >
-                <Link to={`/recording/${link.id}`}>
-                  <RecordingCard data={link} size="small" />
-                </Link>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </LayoutGroup>
-    </motion.div>
+          </svg>
+        )}
+        <LayoutGroup>
+          <div className="forwardLinks">
+            <AnimatePresence>
+              {data.forwardLinks?.map((link) => (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  layoutId={link.id}
+                  layout="position"
+                  key={link.id}
+                >
+                  <Link to={`/recording/${link.id}`}>
+                    <RecordingCard data={link} size="small" />
+                  </Link>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+          <motion.div layoutId={data.id} key={data.id} layout="position">
+            <RecordingCard data={data} />
+          </motion.div>
+          <div className="backwardLinks">
+            <AnimatePresence>
+              {data.backwardLinks?.map((link) => (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  layoutId={link.id}
+                  layout="position"
+                  key={link.id}
+                >
+                  <Link to={`/recording/${link.id}`}>
+                    <RecordingCard data={link} size="small" />
+                  </Link>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </LayoutGroup>
+      </motion.div>
+    </AppContext.Provider>
   );
 }

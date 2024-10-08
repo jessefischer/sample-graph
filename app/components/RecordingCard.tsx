@@ -4,20 +4,19 @@ import { BsFillPauseFill, BsFillPlayFill } from "react-icons/bs";
 import cx from "classnames";
 
 import styles from "./RecordingCard.module.css";
+import { useAppContext } from "~/contexts/AppContext";
 
 interface IRecordingCardProps {
   data: TEnrichedMusicBrainzEntity;
   size?: "large" | "small";
-  playing?: boolean;
-  setPlaying?: (playing: boolean) => void;
 }
 
 export const RecordingCard = ({
   data,
   size = "large",
-  playing,
-  setPlaying,
 }: IRecordingCardProps) => {
+  const { playing, setPlaying } = useAppContext();
+
   return (
     <div className={cx(styles.card, { [styles.small]: size === "small" })}>
       {data.imageUrl && (
@@ -38,7 +37,11 @@ export const RecordingCard = ({
               }
             }}
           >
-            {playing ? <BsFillPauseFill size={96}/> : <BsFillPlayFill size={96}/>}
+            {playing ? (
+              <BsFillPauseFill size={96} />
+            ) : (
+              <BsFillPlayFill size={96} />
+            )}
           </button>
         </div>
       )}

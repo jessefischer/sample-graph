@@ -41,3 +41,8 @@ export type TStar = {
   r: number;
   a: number;
 };
+
+export type TCoords = {
+  x: number;
+  y: number;
+};
