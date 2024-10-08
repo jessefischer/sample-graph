@@ -53,8 +53,9 @@ button {
   gap: 12px;
   height: 200px;
   width: 95%;
-  overflow-x: scroll;
+  overflow-x: auto;
   scrollbar-width: none;
+
   justify-content: center;
 
   a {
