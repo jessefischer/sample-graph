@@ -7,6 +7,7 @@ import { Howl } from "howler";
 import { RecordingCard } from "~/components/RecordingCard";
 import { fetchMusicBrainzEntity } from "~/utils/fetchMusicBrainzEntity";
 import { TStar } from "~/types";
+import { STAR_BLUR_RADIUS, STAR_COUNT, STAR_MAX_RADIUS } from "~/constants";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const entityId = params.id;
@@ -48,12 +49,12 @@ export default function Recording() {
   useEffect(
     () =>
       setStars(
-        Array(35)
+        Array(STAR_COUNT)
           .fill(null)
           .map(() => ({
             x: Math.random() * window.innerWidth,
             y: Math.random() * window.innerHeight,
-            r: Math.random() * 5,
+            r: Math.random() * STAR_MAX_RADIUS,
             a: Math.random(),
           }))
       ),
@@ -99,7 +100,10 @@ export default function Recording() {
           viewBox={`0 0 ${windowSize.width} ${windowSize.height}`}
         >
           <filter id="blur">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation={STAR_BLUR_RADIUS}
+            />
           </filter>
           {stars?.map((star, i) => (
             <circle
