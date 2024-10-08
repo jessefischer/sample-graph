@@ -199,7 +199,7 @@ export default function Recording() {
                   layout="position"
                   key={link.id}
                 >
-                  <Link to={`/recording/${link.id}`}>
+                  <Link to={`/recording/${link.id}`} prefetch="intent">
                     <RecordingCard data={link} size="small" />
                   </Link>
                 </motion.div>
@@ -220,7 +220,7 @@ export default function Recording() {
                   layout="position"
                   key={link.id}
                 >
-                  <Link to={`/recording/${link.id}`}>
+                  <Link to={`/recording/${link.id}`} prefetch="intent">
                     <RecordingCard data={link} size="small" />
                   </Link>
                 </motion.div>
