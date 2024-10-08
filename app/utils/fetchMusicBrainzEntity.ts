@@ -37,11 +37,15 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
     for (let i = 0; i < data.relations.length; i++) {
       const relation = data.relations[i];
       if (relation.type === "free streaming") {
-        const { imageUrl, audioUrl } = await fetchOpenGraph(
-          relation.url.resource
-        );
-        data.imageUrl = imageUrl;
-        data.audioUrl = audioUrl;
+        try {
+          const { imageUrl, audioUrl } = await fetchOpenGraph(
+            relation.url.resource
+          );
+          data.imageUrl = imageUrl;
+          data.audioUrl = audioUrl;
+        } catch {
+          // TODO: Add fallback?
+        }
       } else {
         // const spotifyData = await fetchSpotify({ title: relation.recording.title });
         // if (spotifyData?.tracks?.items.length > 0) {
@@ -65,16 +69,21 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
       title: data.title,
       artist: data["artist-credit"][0].artist.name,
     });
+
     if (spotifyData?.tracks?.items.length > 0) {
       data.imageUrl = spotifyData.tracks.items[0]?.album?.images?.[0]?.url;
       data.audioUrl = spotifyData.tracks.items[0]?.preview_url;
-    }
 
-    if (!data.audioUrl) {
-      const { audioUrl } = await fetchOpenGraph(
-        spotifyData.tracks.items[0]?.external_urls?.spotify
-      );
-      data.audioUrl = audioUrl;
+      if (!data.audioUrl) {
+        try {
+          const { audioUrl } = await fetchOpenGraph(
+            spotifyData.tracks.items[0]?.external_urls?.spotify
+          );
+          data.audioUrl = audioUrl;
+        } catch {
+          // TODO: Add fallback
+        }
+      }
     }
   }
 
@@ -117,5 +126,8 @@ export const fetchMusicBrainzEntity = async (entityId: string) => {
   //   console.log({coverArtData})
   //   forwardLinks[i].coverArtUrl = coverArtData.images?.[0]?.image;
   // }
+
+  console.log({ data });
+
   return { data };
 };

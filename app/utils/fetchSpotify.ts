@@ -29,7 +29,7 @@ export const fetchSpotify = async ({
   // Make an authenticated request to the Spotify API
   const spotifyResponse = await fetch(
     "https://api.spotify.com/v1/search?q=" +
-      encodeURIComponent(`track:"${title}" artist:${artist}`) +
+      encodeURIComponent(`track:"${title}" artist:"${artist}"`) +
       "&type=track&limit=1&market=US",
     {
       headers: {
@@ -37,7 +37,7 @@ export const fetchSpotify = async ({
       },
     }
   );
-  
+
   if (!spotifyResponse.ok) {
     throw new Response("Failed to fetch data from Spotify", { status: 500 });
   }
