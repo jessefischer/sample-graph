@@ -48,9 +48,7 @@ export const RecordingCard = ({
       <div className={styles.mainMetaData}>
         <div className={styles.title}>{data.title}</div>
         <div className={styles.artists}>
-          {data["artist-credit"].map((credit) => (
-            <span key={credit.artist.id}>{credit.artist.name}</span>
-          ))}
+          {data["artist-credit"].map((credit) => credit.artist.name).join(", ")}
         </div>
       </div>
       {data.year && <div className={styles.year}>{data.year}</div>}
