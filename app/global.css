@@ -55,6 +55,13 @@ button {
   width: 95%;
   overflow-x: auto;
   scrollbar-width: none;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
 
   justify-content: center;
 
